@@ -22,7 +22,9 @@ jobs:
           ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
       
-      - name: Gets the risk score
-        run: echo "The risk score ${{ steps.consec.outputs.risk_score }}"
-      - name: Gets the risk scores for cves
-        run: echo "The cve information is ${{ steps.consec.outputs.cve_info }}"
+      - name: Gets the number of low severity findings
+        run: echo "Number of low severity findings is ${{ steps.was.outputs.number_of_low_severity_findings }}"
+      - name: Gets the number of medium severity findings
+        run: echo "Number of medium severity findings is ${{ steps.was.outputs.number_of_medium_severity_findings }}"
+      - name: Gets the number of high severity findings
+        run: echo "Number of high severity is ${{ steps.was.outputs.number_of_high_severity_findings }}"
