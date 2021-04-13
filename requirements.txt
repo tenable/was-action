@@ -1,2 +1,1 @@
-requests
-docker
+requests==2.25.0
