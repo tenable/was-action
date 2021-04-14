@@ -1,5 +1,4 @@
 from  src.main import main
-from docker.errors import APIError, TLSParameterError
 import pytest, json, mock
 
 @mock.patch("src.main.main.requests")

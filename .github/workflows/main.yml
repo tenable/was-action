@@ -12,6 +12,17 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v2
+      -
+        name: tests
+        run: |
+          echo "Installing app dependencies"
+          pip install -r requirements.txt
+          echo "Installing test dependencies"
+          pip install -r requirements-test.txt
+          echo "Setting python path"
+          export PYTHONPATH=.
+          echo "Running tests"
+          pytest -s tests/
       - name: Runs the WAS scan
         uses: ./ # Uses an action in the root directory
         id: was
