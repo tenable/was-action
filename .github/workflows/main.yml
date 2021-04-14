@@ -5,15 +5,9 @@ jobs:
     runs-on: ubuntu-latest
     name: A job to run a WAS scan
     steps:
-      # To use this repository's private action,
-      # you must check out the repository
       - name: Checkout
         uses: actions/checkout@v2
-      -
-        name: Checkout
-        uses: actions/checkout@v2
-      -
-        name: tests
+      - name: Running tests
         run: |
           echo "Installing app dependencies"
           pip install -r requirements.txt
@@ -22,9 +16,9 @@ jobs:
           echo "Setting python path"
           export PYTHONPATH=.
           echo "Running tests"
-          pytest -s tests/
+          pytest tests/
       - name: Runs the WAS scan
-        uses: ./ # Uses an action in the root directory
+        uses: ./
         id: was
         with:
           scan_name: "Test WAS Scan"
