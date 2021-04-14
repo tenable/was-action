@@ -1,0 +1,34 @@
+name: "Action for Tenable WAS"
+description: "Allows users to trigger a WAS scan via a Github Action"
+author: "Gavin D'mello"
+inputs:
+  folder_name:
+    description: "Name of the folder in which the scan resides"
+    default: "My Scans"
+  scan_name:
+    description: "Scan name used while configuring the WAS scan on Tenable Lumin"
+  block_builds:
+    description: "If the user wants to block builds based on the threshold checks"
+    default: "false"
+  wait_for_results:
+    description: "If the user wants to wait for the scan results"
+    default: "false"
+  low_vulns_threshold:
+    description: "Low vulnerability threshold defined by the user"
+    default: 0
+  medium_vulns_threshold:
+    description: "Medium vulnerability threshold defined by the user"
+    default: 0
+  high_vulns_threshold:
+    description: "High vulnerability threshold defined by the user"
+    default: 0
+outputs:
+  number_of_low_severity_findings:
+    description: "Number of low severity findings"
+  number_of_medium_severity_findings:
+    description: "Number of medium severity findings"
+  number_of_high_severity_findings:
+    description: "Number of high severity findings"
+runs:
+  using: "docker"
+  image: "Dockerfile"
