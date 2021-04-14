@@ -1,19 +1,32 @@
 from  src.main import main
-from docker.errors import APIError, TLSParameterError
 import pytest, json, mock
 
 @mock.patch("src.main.main.requests")
 def test_get_configuration_id(mock_requests):
+    mock_requests.request().status_code = 200
     mock_requests.request().text = json.dumps({
         "data": [{
             "name": "scan_name",
             "config_id": "config_id"
         }]
     })
+    assert main.get_configuration_id("folder_name", "scan_name", headers={}) == "config_id"
     
 
 @mock.patch("src.main.main.requests")
 def test_get_configuration_id_not_found(mock_requests):
+    with pytest.raises(ValueError):
+        mock_requests.request().status_code = 200 
+        mock_requests.request().text = json.dumps({
+            "data": [{
+                "name": "scan_name_1",
+                "config_id": "config_id"
+            }]
+        })
+        main.get_configuration_id("folder_name", "scan_name", headers={})
+
+@mock.patch("src.main.main.requests")
+def test_get_configuration_id_status_code_not_200(mock_requests):
     with pytest.raises(ValueError):
         mock_requests.request().text = json.dumps({
             "data": [{
@@ -21,7 +34,8 @@ def test_get_configuration_id_not_found(mock_requests):
                 "config_id": "config_id"
             }]
         })
-        main.get_configuration_id("scan_name", headers={})
+        main.get_configuration_id("folder_name", "scan_name", headers={})
+
 
 @mock.patch("src.main.main.requests")
 def test_launch_scan(mock_requests):

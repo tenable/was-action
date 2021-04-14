@@ -7,7 +7,7 @@ inputs:
     default: "My Scans"
   scan_name:
     description: "Scan name used while configuring the WAS scan on Tenable Lumin"
-  block_builds:
+  check_thresholds:
     description: "If the user wants to block builds based on the threshold checks"
     default: "false"
   wait_for_results:
