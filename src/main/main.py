@@ -127,7 +127,7 @@ def main():
     low_vulns_threshold = int(os.environ["INPUT_LOW_VULNS_THRESHOLD"])
     medium_vulns_threshold = int(os.environ["INPUT_MEDIUM_VULNS_THRESHOLD"])
     high_vulns_threshold = int(os.environ["INPUT_HIGH_VULNS_THRESHOLD"])
-    block_builds = True if str(os.environ["INPUT_BLOCK_BUILDS"]) == "true" else False
+    check_thresholds = True if str(os.environ["INPUT_CHECK_THRESHOLDS"]) == "true" else False
     wait_for_results = True if str(os.environ["INPUT_WAIT_FOR_RESULTS"]) == "true" else False
 
     headers = {"Accept": "application/json", "x-apikeys": f"accessKey={access_key};secretKey={secret_key}"}
@@ -141,7 +141,7 @@ def main():
         number_of_medium_severity_findings = len(report["medium_severity_findings"])
         number_of_high_severity_findings = len(report["high_severity_findings"])
 
-        if block_builds:
+        if check_thresholds:
             check_threshold(
                 number_of_low_severity_findings,
                 low_vulns_threshold,
