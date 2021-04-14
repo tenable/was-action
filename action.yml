@@ -2,6 +2,9 @@ name: "Action for Tenable WAS"
 description: "Allows users to trigger a WAS scan via a Github Action"
 author: "Gavin D'mello"
 inputs:
+  folder_name:
+    description: "Name of the folder in which the scan resides"
+    default: "My Scans"
   scan_name:
     description: "Scan name used while configuring the WAS scan on Tenable Lumin"
   block_builds:
