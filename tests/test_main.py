@@ -39,6 +39,7 @@ def test_get_configuration_id_status_code_not_200(mock_requests):
 
 @mock.patch("src.main.main.requests")
 def test_launch_scan(mock_requests):
+    mock_requests.request().status_code = 202 
     mock_requests.request().text = json.dumps({
         "scan_id": "scan_id"
     })
@@ -47,7 +48,14 @@ def test_launch_scan(mock_requests):
 @mock.patch("src.main.main.requests")
 def test_launch_scan_with_error(mock_requests):
     with pytest.raises(ValueError):
-        mock_requests.request().text = json.dumps({})
+        mock_requests.request().status_code = 400 
+        mock_requests.request().text = json.dumps({
+            "reasons": [
+                {
+                    "reason": "launch with error"
+                }
+            ]
+        })
         main.launch_scan("config_id", headers={}) == "scan_id"
 
 @mock.patch("src.main.main.requests")
