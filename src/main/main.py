@@ -79,7 +79,7 @@ def launch_scan(config_id, headers):
         if response.status_code == 409 and "This configuration already has a running scan:" in reason:
             logger.error(f"{reason}")
             stop_scan(reason.split("'")[1], headers)
-            time.sleep(5)
+            time.sleep(20)
             return launch_scan(config_id, headers)
         else :
             logger.error(f"Failure reason: {reason}")
@@ -103,16 +103,21 @@ def get_report(scan_id, headers, wait_for_results=False):
     headers["Content-Type"] = "application/json"
 
     response = requests.request("GET", url, headers=headers)
+    retry_count = 0
 
     while "findings" not in response.text:
         response_dict = json.loads(response.text)
         reason = response_dict["reasons"][0]["reason"]
         logger.info(reason)
-        logger.info(f"status_code:{response.status_code}")
         if response.status_code == 400 and reason == "scan not finalized":
             logger.info("Waiting for 10 minutes")
             time.sleep(10*60)
             response = requests.request("GET", url, headers=headers)
+        elif response.status_code == 404 and "not found" in reason and retry_count < 3:
+            logger.info("Scan resource not found, waiting for 20 seconds")
+            time.sleep(20)
+            response = requests.request("GET", url, headers=headers)
+            retry_count = retry_count + 1
         else:
             raise ValueError(f"Something went wrong")
 
@@ -158,9 +163,9 @@ def main():
 
     config_id = get_configuration_id(folder_name, scan_name, headers)
     scan_id = launch_scan(config_id, headers)
-    report = get_report(scan_id, headers, wait_for_results=wait_for_results)
 
     if wait_for_results:
+        report = get_report(scan_id, headers, wait_for_results=wait_for_results)
         number_of_low_severity_findings = len(report["low_severity_findings"])
         number_of_medium_severity_findings = len(report["medium_severity_findings"])
         number_of_high_severity_findings = len(report["high_severity_findings"])
