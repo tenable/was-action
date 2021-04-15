@@ -60,6 +60,7 @@ def test_launch_scan_with_error(mock_requests):
 
 @mock.patch("src.main.main.requests")
 def test_get_report(mock_requests):
+    mock_requests.request().status_code = 200
     mock_requests.request().text = json.dumps({
         "findings": [{
             "risk_factor": "low"
@@ -96,6 +97,7 @@ def test_get_report(mock_requests):
 
 @mock.patch("src.main.main.requests")
 def test_get_report_with_info(mock_requests):
+    mock_requests.request().status_code = 200
     mock_requests.request().text = json.dumps({
         "findings": [{
             "risk_factor": "low"
