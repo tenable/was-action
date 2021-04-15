@@ -79,6 +79,7 @@ def launch_scan(config_id, headers):
         if response.status_code == 409 and "This configuration already has a running scan:" in reason:
             logger.error(f"{reason}")
             stop_scan(reason.split("'")[1], headers)
+            time.sleep(5)
             return launch_scan(config_id, headers)
         else :
             logger.error(f"Failure reason: {reason}")
@@ -107,6 +108,7 @@ def get_report(scan_id, headers, wait_for_results=False):
         response_dict = json.loads(response.text)
         reason = response_dict["reasons"][0]["reason"]
         logger.info(reason)
+        logger.info(f"status_code:{response.status_code}")
         if response.status_code == 400 and reason == "scan not finalized":
             logger.info("Waiting for 10 minutes")
             time.sleep(10*60)
