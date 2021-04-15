@@ -49,6 +49,21 @@ def get_configuration_id(folder_name, scan_name, headers):
 
     return config_id
 
+def stop_scan(scan_id, headers):
+    """
+    Stops an existing scan
+    """
+    url = f"https://cloud.tenable.com/was/v2/scans/{scan_id}"
+
+    payload = {"requested_action": "stop"}
+
+    response = requests.request("PATCH", url, json=payload, headers=headers)
+
+    if response.status_code != 202:
+        response_dict = json.loads(response.text)
+        reason = response_dict["reasons"][0]["reason"]
+        logger.error(f"Failure reason: {reason}")
+        raise RuntimeError("Failed to stop running scan")
 
 def launch_scan(config_id, headers):
     """
@@ -57,11 +72,18 @@ def launch_scan(config_id, headers):
     url = f"https://cloud.tenable.com/was/v2/configs/{config_id}/scans"
     response = requests.request("POST", url, headers=headers)
 
-    if response.status_code != 202:
-        logger.error(f"Error response {response.text}, status code {response.status_code}")
-        # raise ValueError("Failed to launch scan")
-
     response_dict = json.loads(response.text)
+
+    if response.status_code != 202:
+        reason = response_dict["reasons"][0]["reason"]
+        if response.status_code == 409 and "This configuration already has a running scan:" in reason:
+            logger.error(f"{reason}")
+            stop_scan(reason.split("'")[1], headers)
+            return launch_scan(config_id, headers)
+        else :
+            logger.error(f"Failure reason: {reason}")
+            raise ValueError("Failed to launch scan")
+
     if "scan_id" not in response_dict:
         raise ValueError("Scan id not returned")
 
@@ -83,14 +105,13 @@ def get_report(scan_id, headers, wait_for_results=False):
 
     while "findings" not in response.text:
         response_dict = json.loads(response.text)
-        if response.status_code == 400 and response_dict["reasons"][0]["reason"] == "scan not finalized":
-            logger.info(response_dict["reasons"][0]["reason"])
+        reason = response_dict["reasons"][0]["reason"]
+        logger.info(reason)
+        if response.status_code == 400 and reason == "scan not finalized":
             logger.info("Waiting for 10 minutes")
             time.sleep(10*60)
             response = requests.request("GET", url, headers=headers)
         else:
-            reason = response_dict["reasons"][0]["reason"]
-            logger.error(f"Failure reason: {reason}")
             raise ValueError(f"Something went wrong")
 
     findings = json.loads(response.text)["findings"]
