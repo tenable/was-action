@@ -89,7 +89,8 @@ def get_report(scan_id, headers, wait_for_results=False):
             time.sleep(10*60)
             response = requests.request("GET", url, headers=headers)
         else:
-            logger.error(f"Response received: {response_dict}")
+            reason = response_dict["reasons"][0]["reason"]
+            logger.error(f"Failure reason: {reason}")
             raise ValueError(f"Something went wrong")
 
     findings = json.loads(response.text)["findings"]
