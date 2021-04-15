@@ -105,7 +105,7 @@ def get_report(scan_id, headers, wait_for_results=False):
     response = requests.request("GET", url, headers=headers)
     retry_count = 0
 
-    while "findings" not in response.text:
+    while response.status_code != 200:
         response_dict = json.loads(response.text)
         reason = response_dict["reasons"][0]["reason"]
         logger.info(reason)
