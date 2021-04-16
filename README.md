@@ -41,6 +41,7 @@ jobs:
 | `low_vulns_threshold` _(optional)_  | Low severity findings threshold to be checked based on the WAS scan results |
 | `medium_vulns_threshold` _(optional)_  | Medium severity findings threshold to be checked based on the WAS scan results |
 | `high_vulns_threshold` _(optional)_  | High severity findings threshold to be checked based on the WAS scan results |
+| `critical_vulns_threshold` _(optional)_  | High severity findings threshold to be checked based on the WAS scan results |
 
 ### Outputs
 
@@ -49,6 +50,7 @@ jobs:
 | `number_of_low_severity_findings`  | Number of low severity findings found in the scan |
 | `number_of_medium_severity_findings`  | Number of medium severity findings found in the scan |
 | `number_of_high_severity_findings`  | Number of high severity findings found in the scan|
+| `number_of_critical_severity_findings`  | Number of critical severity findings found in the scan|
 
 ### Providing secrets
 The Tenable.io access key and secret key need to be set in your repository secrets and provided the following way to the action

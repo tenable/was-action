@@ -22,6 +22,9 @@ inputs:
   high_vulns_threshold:
     description: "High vulnerability threshold defined by the user"
     default: 0
+  critical_vulns_threshold:
+    description: "Critical vulnerability threshold defined by the user"
+    default: 0
 outputs:
   number_of_low_severity_findings:
     description: "Number of low severity findings"
@@ -29,6 +32,8 @@ outputs:
     description: "Number of medium severity findings"
   number_of_high_severity_findings:
     description: "Number of high severity findings"
+  number_of_critical_severity_findings:
+    description: "Number of critical severity findings"
 runs:
   using: "docker"
   image: "Dockerfile"

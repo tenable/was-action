@@ -123,19 +123,21 @@ def get_report(scan_id, headers, wait_for_results=False):
 
     findings = json.loads(response.text)["findings"]
 
-    overall_findings = [finding for finding in findings if finding["risk_factor"] in ["low", "medium", "high"]]
+    overall_findings = [finding for finding in findings if finding["risk_factor"] in ["low", "medium", "high", "critical"]]
     low_severity_findings = [finding for finding in findings if finding["risk_factor"] == "low"]
     medium_severity_findings = [finding for finding in findings if finding["risk_factor"] == "medium"]
     high_severity_findings = [finding for finding in findings if finding["risk_factor"] == "high"]
+    critical_severity_findings = [finding for finding in findings if finding["risk_factor"] == "critical"]
 
     return {
         "overall_findings": overall_findings,
         "low_severity_findings": low_severity_findings,
         "medium_severity_findings": medium_severity_findings,
-        "high_severity_findings": high_severity_findings
+        "high_severity_findings": high_severity_findings,
+        "critical_severity_findings": critical_severity_findings
     }
 
-def check_threshold(low_vulns, low_vulns_threshold, medium_vulns, medium_vulns_threshold, high_vulns, high_vulns_threshold):
+def check_threshold(low_vulns, low_vulns_threshold, medium_vulns, medium_vulns_threshold, high_vulns, high_vulns_threshold, critical_vulns, critical_vulns_threshold):
        
     if low_vulns > low_vulns_threshold:
         raise ValueError("Low severity vulnerabilities found have exceeded threshold")
@@ -145,6 +147,9 @@ def check_threshold(low_vulns, low_vulns_threshold, medium_vulns, medium_vulns_t
 
     if high_vulns > high_vulns_threshold:
         raise ValueError("High severity vulnerabilities found have exceeded threshold")
+
+    if critical_vulns > critical_vulns_threshold:
+        raise ValueError("Critical severity vulnerabilities found have exceeded threshold")
 
 def main():
 
@@ -156,6 +161,7 @@ def main():
     low_vulns_threshold = int(os.environ["INPUT_LOW_VULNS_THRESHOLD"])
     medium_vulns_threshold = int(os.environ["INPUT_MEDIUM_VULNS_THRESHOLD"])
     high_vulns_threshold = int(os.environ["INPUT_HIGH_VULNS_THRESHOLD"])
+    critical_vulns_threshold = int(os.environ["INPUT_CRITICAL_VULNS_THRESHOLD"])
     check_thresholds = True if str(os.environ["INPUT_CHECK_THRESHOLDS"]) == "true" else False
     wait_for_results = True if str(os.environ["INPUT_WAIT_FOR_RESULTS"]) == "true" else False
 
@@ -169,6 +175,7 @@ def main():
         number_of_low_severity_findings = len(report["low_severity_findings"])
         number_of_medium_severity_findings = len(report["medium_severity_findings"])
         number_of_high_severity_findings = len(report["high_severity_findings"])
+        number_of_critical_severity_findings = len(report["critical_severity_findings"])
 
         if check_thresholds:
             check_threshold(
@@ -177,12 +184,15 @@ def main():
                 number_of_medium_severity_findings,
                 medium_vulns_threshold,
                 number_of_high_severity_findings,
-                high_vulns_threshold
+                high_vulns_threshold,
+                number_of_critical_severity_findings,
+                critical_vulns_threshold
             )
 
         logger.info(f"::set-output name=number_of_low_severity_findings::{number_of_low_severity_findings}")
         logger.info(f"::set-output name=number_of_medium_severity_findings::{number_of_medium_severity_findings}")
         logger.info(f"::set-output name=number_of_high_severity_findings::{number_of_high_severity_findings}")
+        logger.info(f"::set-output name=number_of_critical_severity_findings::{number_of_critical_severity_findings}")
 
 if __name__ == "__main__":
     main()
