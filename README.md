@@ -1,5 +1,5 @@
-# was-action
-Tenable's WAS action
+# was-action 
+Tenable's WAS action ![Build](https://github.com/tenable/was-action/actions/workflows/main.yml/badge.svg)
 
 This action can be used to trigger a WAS scan. The scan needs to be configured in the Tenable.io WAS dashboard. The scan name and the folder name 
 need to provided as input for the action to launch the scan. The action does not modify the scan configuration The `wait_for_results` optional input can be used to make the action wait for the results of the scan.
@@ -23,7 +23,6 @@ jobs:
         id: was
         with:
           scan_name: test_scan
-          folder_name: My Scans
           wait_for_results: "true"
         env:
           ACCESS_KEY: ${{ secrets.ACCESS_KEY }}

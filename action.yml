@@ -11,7 +11,7 @@ inputs:
     description: "If the user wants to block builds based on the threshold checks"
     default: "false"
   wait_for_results:
-    description: "If the user wants to wait for the scan results"
+    description: "If the action should wait for the scan results"
     default: "false"
   low_vulns_threshold:
     description: "Low vulnerability threshold defined by the user"

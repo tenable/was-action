@@ -34,6 +34,8 @@ def get_configuration_id(folder_name, scan_name, headers):
     response = requests.request("POST", url, json=payload, headers=headers)
 
     if response.status_code != 200:
+        reason = json.loads(response.text)["reasons"][0]["reason"]
+        logger.error(f"Failure reason: {reason}")
         raise ValueError("Failed to retrieve scan configuration")
 
     response_dict = json.loads(response.text)["data"]
@@ -45,6 +47,7 @@ def get_configuration_id(folder_name, scan_name, headers):
             break
     
     if not config_id:
+        logger.info(f"data received: {response_dict}")
         raise ValueError("Scan configuration not found")
 
     return config_id
@@ -90,14 +93,11 @@ def launch_scan(config_id, headers):
 
     return response_dict["scan_id"]
 
-def get_report(scan_id, headers, wait_for_results=False):
+def get_report(scan_id, headers):
     """
     Will get all vulnerabilities for the scan
     
     """
-    if not wait_for_results:
-        logger.info("Not waiting for report and exiting")
-        return
 
     url = f"https://cloud.tenable.com/was/v2/scans/{scan_id}/report"
     headers["Content-Type"] = "application/json"
@@ -171,7 +171,7 @@ def main():
     scan_id = launch_scan(config_id, headers)
 
     if wait_for_results:
-        report = get_report(scan_id, headers, wait_for_results=wait_for_results)
+        report = get_report(scan_id, headers)
         number_of_low_severity_findings = len(report["low_severity_findings"])
         number_of_medium_severity_findings = len(report["medium_severity_findings"])
         number_of_high_severity_findings = len(report["high_severity_findings"])
