@@ -23,7 +23,6 @@ jobs:
         id: was
         with:
           scan_name: test_scan
-          folder_name: My Scans
           wait_for_results: "true"
         env:
           ACCESS_KEY: ${{ secrets.ACCESS_KEY }}

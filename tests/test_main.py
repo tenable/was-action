@@ -86,12 +86,14 @@ def test_get_report(mock_requests):
     high_findings = [{
             "risk_factor": "high"
     }]
+    critical_findings = []
     
-    assert main.get_report("scan_id", headers={}, wait_for_results=True) == {
+    assert main.get_report("scan_id", headers={}) == {
         "overall_findings": overall_findings,
         "high_severity_findings": high_findings,
         "low_severity_findings": low_findings,
-        "medium_severity_findings": medium_findings
+        "medium_severity_findings": medium_findings,
+        "critical_severity_findings": critical_findings
     }
 
 
@@ -107,6 +109,8 @@ def test_get_report_with_info(mock_requests):
             "risk_factor": "medium"
         }, {
              "risk_factor": "info"
+        }, {
+            "risk_factor": "critical"
         }]
     })
     overall_findings = [{
@@ -115,6 +119,8 @@ def test_get_report_with_info(mock_requests):
             "risk_factor": "high"
         },{
             "risk_factor": "medium"
+        }, {
+            "risk_factor": "critical"
     }]
     low_findings = [{
             "risk_factor": "low"
@@ -125,14 +131,18 @@ def test_get_report_with_info(mock_requests):
     high_findings = [{
             "risk_factor": "high"
     }]
+    critical_findings = [{
+            "risk_factor": "critical"
+    }]
     
-    assert main.get_report("scan_id", headers={}, wait_for_results=True) == {
+    assert main.get_report("scan_id", headers={}) == {
         "overall_findings": overall_findings,
         "high_severity_findings": high_findings,
         "low_severity_findings": low_findings,
-        "medium_severity_findings": medium_findings
+        "medium_severity_findings": medium_findings,
+        "critical_severity_findings": critical_findings
     }
 
 def test_check_threshold():
     with pytest.raises(ValueError):
-        main.check_threshold(10, 5, 5, 10, 5, 10)
+        main.check_threshold(10, 5, 5, 10, 5, 10, 5, 10)

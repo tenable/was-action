@@ -4,7 +4,7 @@ author: "Gavin D'mello"
 inputs:
   folder_name:
     description: "Name of the folder in which the scan resides"
-    default: "My Scans"
+    default: "All Scans"
   scan_name:
     description: "Scan name used while configuring the WAS scan on Tenable Lumin"
   check_thresholds:
@@ -25,6 +25,9 @@ inputs:
   critical_vulns_threshold:
     description: "Critical vulnerability threshold defined by the user"
     default: 0
+  ignore_cves:
+    description: "List of cves to ignore"
+    default: '[]'
 outputs:
   number_of_low_severity_findings:
     description: "Number of low severity findings"

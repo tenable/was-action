@@ -2,6 +2,7 @@
 import os, json, time
 import sys, traceback
 import requests
+import copy
 import logging
 
 
@@ -90,14 +91,24 @@ def launch_scan(config_id, headers):
 
     return response_dict["scan_id"]
 
-def get_report(scan_id, headers, wait_for_results=False):
+def filter_findings(findings, ignore_list):
+    filtered_findings_list = []
+    for cve in ignore_list:
+        for finding in findings:
+            if cve in finding["cves"]:
+                cves = copy.deepcopy(finding["cves"])
+                cves.remove(cve)
+                finding["cves"] = cves
+                if not cves:
+                    filtered_findings_list.append(finding)
+
+    return filtered_findings_list
+
+def get_report(scan_id, headers, ignore_list=[]):
     """
     Will get all vulnerabilities for the scan
     
     """
-    if not wait_for_results:
-        logger.info("Not waiting for report and exiting")
-        return
 
     url = f"https://cloud.tenable.com/was/v2/scans/{scan_id}/report"
     headers["Content-Type"] = "application/json"
@@ -164,18 +175,21 @@ def main():
     critical_vulns_threshold = int(os.environ["INPUT_CRITICAL_VULNS_THRESHOLD"])
     check_thresholds = True if str(os.environ["INPUT_CHECK_THRESHOLDS"]) == "true" else False
     wait_for_results = True if str(os.environ["INPUT_WAIT_FOR_RESULTS"]) == "true" else False
+    ignore_list = json.loads(str(os.environ["INPUT_IGNORE_CVES"]))
 
     headers = {"Accept": "application/json", "x-apikeys": f"accessKey={access_key};secretKey={secret_key}"}
 
-    config_id = get_configuration_id(folder_name, scan_name, headers)
-    scan_id = launch_scan(config_id, headers)
+    # config_id = get_configuration_id(folder_name, scan_name, headers)
+    # scan_id = launch_scan(config_id, headers)
 
     if wait_for_results:
-        report = get_report(scan_id, headers, wait_for_results=wait_for_results)
+        report = get_report("b73d2e72-56fd-45a2-b907-2b6cc2203825", headers, ignore_list=ignore_list)
         number_of_low_severity_findings = len(report["low_severity_findings"])
-        number_of_medium_severity_findings = len(report["medium_severity_findings"])
+        # number_of_medium_severity_findings = len(report["medium_severity_findings"])
         number_of_high_severity_findings = len(report["high_severity_findings"])
         number_of_critical_severity_findings = len(report["critical_severity_findings"])
+
+        number_of_medium_severity_findings = len(filter_findings(report["medium_severity_findings"], ignore_list))
 
         if check_thresholds:
             check_threshold(
