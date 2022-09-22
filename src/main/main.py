@@ -37,7 +37,7 @@ def get_configuration_id(folder_name, scan_name, headers):
         reason = json.loads(response.text)["reasons"][0]["reason"]
         logger.error(f"Failure reason: {reason}")
         raise ValueError("Failed to retrieve scan configuration")
-
+    print(response.text)
     response_dict = json.loads(response.text)["data"]
 
     config_id = None
