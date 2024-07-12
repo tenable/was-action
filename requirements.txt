@@ -1,1 +1,2 @@
-requests==2.25.0
+requests==2.32.2
+idna>=3.7 # not directly required, pinned by Snyk to avoid a vulnerability
